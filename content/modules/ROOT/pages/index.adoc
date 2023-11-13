@@ -1,51 +1,95 @@
-= {lab_name}
+== What is Leapp?
 
-The `lab_name` var, known as an asciidoc attribute, above was set in `./content/antora.yml` and can be used to set the lab_name or title of your content.
-You are both free to change its value and if you prefer to use a different var name, you can change the value of `lab_name`, for example to `title` in `./content/antora.yml` and then reference it in your content as `\{title}`.
-me
+Red Hat’s leapp tool provides existing Red Hat Enterprise Linux
+instances to an upgrade path from one major version to the next. This
+can be done on a one-to-one basis or en mass with a tool like Satellite.
+The Leapp tooling also includes a pre-upgrade assistant that makes it
+easy to identify breaking changes or warn about potential issues before
+any lasting changes are made to the system.
 
-== Variables
+Before diving in, the question you have to ask is: is this workload
+worth executing a rebuild from scratch? That process can be tedious and
+time consuming. Doing an in-place upgrade retains the subscription,
+installed packages, user data, and configurations all while saving the
+time and resources required to deploy fresh.
 
-Other vars can also be set there, such as `ssh_user` and `ssh_password`, and referenced inline in the lab content by using the `\{foo}` syntax.
+== Installing Leapp
 
-This is another var, or asciidoc attribute, from `./content/antora.yml` {my_var}
+To get started, it is highly recommended that you update all packages on
+your system to the latest version available. (Note: for this lab,
+updates have already been run for you.)
 
-== Writing your lab
+Leapp is a supported operation for RHEL which means support tickets can
+be opened in case obstacles are encountered. It also means that the
+leapp utility is available straight from the Red Hat package repository.
+First, verify the version of Red Hat Enterprise Linux that you have
+installed:
 
-Whatever type of content you are writing we'll refer to your *content* as "your lab" in this document.
+....
+cat /etc/redhat-release
+....
 
-=== Lab structure
-
-
-Wether you are writing a lab
-
-* First, we will build a monolithic application already compiled as RPM packages and put it into a container. This will allow us to deploy the application, copy it between machines, and update it separately from the operating system. This process affords us a portable and easily maintained component instead of tightly coupling the application with your operating system maintenance.
-
-* In closing we will build a second container on a different operating system version that makes an application not packaged into RPMs. This will be similar to a web application deployment, positioning the correct files at the right locations. To do this, we will pull a project from GitHub and position the component files within our container image. The purpose of this is to achieve a portable application container that can deploy on several different versions of Red Hat Enterprise Linux. This also provides the benefit of decoupling your application maintenance, which would all happen by building new containers versus operating system maintenance. The container is no longer reliant on the operating system installed on the machine where the application is deployed.
-
-
-. Now let's examine this cluster a bit more by describing the cluster (the `$GUID` environment variable is already set for you so you can immediately describe your individual cluster):
-+
-[source,sh,role=execute]
+[source,bash]
 ----
-podman ps
-----
-+
-.Sample Output
-[source,texinfo,subs="attributes"]
-----
-CONTAINER ID  IMAGE                        COMMAND           CREATED      STATUS      PORTS                 NAMES
-2dcfee9e50c4  docker.io/library/httpd:2.4  httpd-foreground  3 hours ago  Up 3 hours  0.0.0.0:8080->80/tcp  showroom-httpd
+# cat /etc/redhat-release
+Red Hat Enterprise Linux release 8.8 (Ootpa)
 ----
 
+Sinc you are already running a properly registered RHEL machine, you do
+not need to enable any additional repositories. Instead, simply use the
+DNF package manager to install leapp and its dependencies:
 
+....
+dnf install -y leapp-upgrade
+....
 
+[source,bash]
+----
+# dnf install -y leapp-upgrade
+Updating Subscription Management repositories.
+Last metadata expiration check: 0:00:20 ago on Mon 12 Jun 2023 12:31:30 PM EDT.
+Dependencies resolved.
+============================================================================================================================================
+ Package                           Architecture Version                                        Repository                              Size
+============================================================================================================================================
+Installing:
+ leapp-upgrade-el8toel9            noarch       0.18.0-1.el8                                   rhel-8-for-x86_64-appstream-rpms       829 k
+Installing dependencies:
+ leapp                             noarch       0.15.1-1.el8                                   rhel-8-for-x86_64-appstream-rpms        33 k
+ leapp-deps                        noarch       0.15.1-1.el8                                   rhel-8-for-x86_64-appstream-rpms        15 k
+ leapp-upgrade-el8toel9-deps       noarch       0.18.0-1.el8                                   rhel-8-for-x86_64-appstream-rpms        35 k
+ python3-leapp                     noarch       0.15.1-1.el8                                   rhel-8-for-x86_64-appstream-rpms       178 k
+ python3-pip                       noarch       9.0.3-22.el8                                   rhel-8-for-x86_64-appstream-rpms        20 k -Junn-23
+ python3-setuptools                noarch       39.2.0-7.el8                                   rhel-8-for-x86_64-baseos-rpms          163 k
+ python36                          x86_64       3.6.8-38.module+el8.5.0+12207+5c5719bc         rhel-8-for-x86_64-appstream-rpms        19 k
+ systemd-container                 x86_64       239-74.el8_8                                   rhel-8-for-x86_64-baseos-rpms          772 k
+Enabling module streams:
+ python36                                       3.6
 
+Transaction Summary
+============================================================================================================================================
+Install  9 Packages
 
+... output truncated ...
 
+Installed:
+  leapp-0.15.1-1.el8.noarch                                      leapp-deps-0.15.1-1.el8.noarch
+  leapp-upgrade-el8toel9-0.18.0-1.el8.noarch                     leapp-upgrade-el8toel9-deps-0.18.0-1.el8.noarch
+  python3-leapp-0.15.1-1.el8.noarch                              python3-pip-9.0.3-22.el8.noarch
+  python3-setuptools-39.2.0-7.el8.noarch                         python36-3.6.8-38.module+el8.5.0+12207+5c5719bc.x86_64
+  systemd-container-239-74.el8_8.x86_64
 
+Complete!
+----
 
-=== Lab Access
+Verify the install was successful:
 
-The terminal window to your right is *already* logged into the lab environment as the `{ssh_user}` user via `ssh`. 
-All steps of this lab are to be completed as the `{ssh_user}` user.
+....
+leapp --version
+....
+
+[source,bash]
+----
+# leapp --version
+leapp version 0.15.1
+----
