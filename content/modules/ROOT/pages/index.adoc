@@ -16,8 +16,23 @@ time and resources required to deploy fresh.
 == Installing Leapp
 
 To get started, it is highly recommended that you update all packages on
-your system to the latest version available. (Note: for this lab,
-updates have already been run for you.)
+your system to the latest version available.
+
+[source,bash,run]
+----
+dnf update -y && reboot
+----
+
+The terminal will lose connection with the rhel08 host leaving the
+message `Connection to rhel08 closed`.
+
+.exited
+image::exited.png[exited]
+
+Refresh the `rhel08` tab until you are reconnected.
+
+.refresh
+image::refreshbutton.png[refresh]
 
 Leapp is a supported operation for RHEL which means support tickets can
 be opened in case obstacles are encountered. It also means that the
@@ -25,71 +40,23 @@ leapp utility is available straight from the Red Hat package repository.
 First, verify the version of Red Hat Enterprise Linux that you have
 installed:
 
-....
+[source,bash,run]
+----
 cat /etc/redhat-release
-....
-
-[source,bash]
-----
-# cat /etc/redhat-release
-Red Hat Enterprise Linux release 8.8 (Ootpa)
 ----
 
-Sinc you are already running a properly registered RHEL machine, you do
+Since you are already running a properly registered RHEL machine, you do
 not need to enable any additional repositories. Instead, simply use the
 DNF package manager to install leapp and its dependencies:
 
-....
-dnf install -y leapp-upgrade
-....
-
-[source,bash]
+[source,bash,run]
 ----
-# dnf install -y leapp-upgrade
-Updating Subscription Management repositories.
-Last metadata expiration check: 0:00:20 ago on Mon 12 Jun 2023 12:31:30 PM EDT.
-Dependencies resolved.
-============================================================================================================================================
- Package                           Architecture Version                                        Repository                              Size
-============================================================================================================================================
-Installing:
- leapp-upgrade-el8toel9            noarch       0.18.0-1.el8                                   rhel-8-for-x86_64-appstream-rpms       829 k
-Installing dependencies:
- leapp                             noarch       0.15.1-1.el8                                   rhel-8-for-x86_64-appstream-rpms        33 k
- leapp-deps                        noarch       0.15.1-1.el8                                   rhel-8-for-x86_64-appstream-rpms        15 k
- leapp-upgrade-el8toel9-deps       noarch       0.18.0-1.el8                                   rhel-8-for-x86_64-appstream-rpms        35 k
- python3-leapp                     noarch       0.15.1-1.el8                                   rhel-8-for-x86_64-appstream-rpms       178 k
- python3-pip                       noarch       9.0.3-22.el8                                   rhel-8-for-x86_64-appstream-rpms        20 k -Junn-23
- python3-setuptools                noarch       39.2.0-7.el8                                   rhel-8-for-x86_64-baseos-rpms          163 k
- python36                          x86_64       3.6.8-38.module+el8.5.0+12207+5c5719bc         rhel-8-for-x86_64-appstream-rpms        19 k
- systemd-container                 x86_64       239-74.el8_8                                   rhel-8-for-x86_64-baseos-rpms          772 k
-Enabling module streams:
- python36                                       3.6
-
-Transaction Summary
-============================================================================================================================================
-Install  9 Packages
-
-... output truncated ...
-
-Installed:
-  leapp-0.15.1-1.el8.noarch                                      leapp-deps-0.15.1-1.el8.noarch
-  leapp-upgrade-el8toel9-0.18.0-1.el8.noarch                     leapp-upgrade-el8toel9-deps-0.18.0-1.el8.noarch
-  python3-leapp-0.15.1-1.el8.noarch                              python3-pip-9.0.3-22.el8.noarch
-  python3-setuptools-39.2.0-7.el8.noarch                         python36-3.6.8-38.module+el8.5.0+12207+5c5719bc.x86_64
-  systemd-container-239-74.el8_8.x86_64
-
-Complete!
+dnf install -y leapp-upgrade
 ----
 
 Verify the install was successful:
 
-....
-leapp --version
-....
-
-[source,bash]
+[source,bash,run]
 ----
-# leapp --version
-leapp version 0.15.1
+leapp --version
 ----
